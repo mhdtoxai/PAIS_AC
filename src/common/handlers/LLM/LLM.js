@@ -36,7 +36,7 @@ const LLM = async (senderId, receivedMessage) => {
   //   return false;
   // }
 
-  const url = 'https://llm-c4uot.ondigitalocean.app/pais/';
+  const url = 'https://llm-pais-ac-7bx7g.ondigitalocean.app//pais/';
 
   const token = process.env.API_TOKEN_LLM;
 
