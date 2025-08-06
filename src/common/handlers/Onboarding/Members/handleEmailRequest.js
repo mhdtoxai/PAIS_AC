@@ -53,7 +53,7 @@ const handleEmailRequest = async (senderId, receivedMessage) => {
         const updatedUserInfo = await getUserInfo(senderId);
         console.log('Intentos fallidos después de la actualización:', updatedUserInfo.email_attempts);
 
-        await sendMessage(senderId, '❌ El correo proporcionado no está registrado en CANACO LEÓN.\n📧 Por favor, intenta con otro correo válido.');
+        await sendMessage(senderId, '❌ El correo proporcionado no está registrado en PAIS AC .\n📧 Por favor, intenta con otro correo válido.');
         return;
     }
 

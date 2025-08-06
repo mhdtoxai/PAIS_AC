@@ -1,4 +1,3 @@
-// LLM.js
 const axios = require('axios');
 const sendMessage = require('../../services/Wp-Envio-Msj/sendMessage');
 const userService = require('../../services/userService');
@@ -12,73 +11,78 @@ const LLM = async (senderId, receivedMessage) => {
     return false;
   }
 
-  // const estadoUsuario = userDoc.state;
   const { userId, member, organization_id } = userDoc;
-
-
-  // const estadosExcluidos = [
-  //   'bienvenida',
-  //   'no_miembro',
-  //   'no_miembro_confirmacion',
-  //   'no_miembro_nombre',
-  //   'no_miembro_phone',
-  //   'no_miembro_email',
-  //   'no_miembro_confirm_email',
-  //   'no_miembro_ayuda',
-  //   'solicitud_email',
-  //   'confirmar_codigo_email',
-  //   'enviar_codigo',
-  //   'validar_codigo',
-  // ];
-
-  // if (estadosExcluidos.includes(estadoUsuario)) {
-  //   console.log(`Estado ${estadoUsuario} excluido. No se ejecutará LLMOlya.`);
-  //   return false;
-  // }
-
-  const url = 'https://llm-pais-ac-7bx7g.ondigitalocean.app/pais/';
-
-  const token = process.env.API_TOKEN_LLM;
 
   const body = {
     from: senderId,
     query: receivedMessage,
-    member: member,
-    organization_id
+    organization_id,
   };
 
-  try {
-    const response = await axios.post(url, body, {
+  const llmUrl = 'https://llm-pais-ac-7bx7g.ondigitalocean.app/pais/';
+  const intentUrl = 'https://pais-ac-h2n7q.ondigitalocean.app/api/intent';
+  const token = process.env.API_TOKEN_LLM;
+
+  // ✅ Función central para llamar a la LLM y procesar respuesta
+  const callLLM = async () => {
+    const llmResponse = await axios.post(llmUrl, body, {
       headers: {
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
     });
 
-    const apiResponse = response.data;
+    const apiResponse = llmResponse.data;
 
-    // 💬 Siempre enviamos la respuesta del LLM (si existe)
     if (apiResponse?.response) {
-      console.log('Respuesta de la API LLM:', apiResponse.response);
-      await sendMessage(senderId, apiResponse.response);
+      const responseText = apiResponse.response.trim();
+      console.log('Respuesta limpia de la API LLM:', responseText);
+      await sendMessage(senderId, responseText);
     }
 
-    // ⚠️ Solo si hay acción, verificamos si el usuario está activo
     if (apiResponse?.action) {
       console.log(`Acción detectada: ${apiResponse.action}`);
       const isActive = await verifyUserStatus(userId, senderId);
-
       if (isActive) {
         await processApiAction(apiResponse.action, userId, senderId);
       } else {
         console.log(`Usuario ${userId} no está activo. No se ejecuta la acción.`);
-        // El mensaje de estado inactivo ya lo maneja `verifyUserStatus`
       }
+    }
+  };
+
+  try {
+    // 🔍 Si es miembro, primero clasificamos con /intent
+    if (member) {
+      const intentResponse = await axios.post(intentUrl, body, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const intentData = intentResponse.data;
+      console.log('Respuesta de /api/intent:', intentData);
+
+      if (intentData?.action === 'pregunta_general') {
+        await callLLM(); // 🧠 Pregunta informativa → llamar a LLM
+      } else {
+        const isActive = await verifyUserStatus(userId, senderId);
+        if (isActive) {
+          await processApiAction(intentData.action, userId, senderId);
+        } else {
+          console.log(`Usuario ${userId} no está activo. No se ejecuta la acción.`);
+        }
+      }
+
+    } else {
+      // 🔓 No miembro → ir directo a LLM
+      await callLLM();
     }
 
     return true;
+
   } catch (error) {
-    console.error('❌ Error al llamar a la API de LLM:', error.response?.data || error.message);
+    console.error('❌ Error en el proceso de LLM:', error.response?.data || error.message);
     return false;
   }
 };

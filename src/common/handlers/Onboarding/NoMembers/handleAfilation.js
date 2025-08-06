@@ -47,14 +47,18 @@ const handleAfilation = async (senderId, receivedMessage) => {
     console.log(`Estado actualizado a 'no_miembro_confirmacion'`);
 
     const info =
-        '🏛️ *PAIS AC (Profesionales en Asesoría Inmobiliaria y Similares A.C.) * es una de las organizaciones empresariales más importantes de México, con miles de afiliados en todo el país. 📈🇲🇽\n\n' +
+        '🏛️ *PAIS AC (Profesionales en Asesoría Inmobiliaria y Similares A.C.)* es una asociación inmobiliaria con 38 años de experiencia que aporta y capacita a los Asesores más profesionales y actualizados en el sector inmobiliario. 📈🇲🇽\n\n' +
         '✨ *¿Qué beneficios obtienes al afiliarte?*\n' +
-        '📚 • Asesoría legal, fiscal y administrativa especializada ⚖️📊\n' +
-        '🎟️ • Participación en eventos, ferias y exposiciones comerciales 🤝🧑‍💼\n' +
-        '💼 • Promoción de tu negocio en redes y directorios empresariales 🌐📣\n' +
-        '🏷️ • Acceso a convenios y descuentos con empresas e instituciones 💡🛒\n' +
-        '💰 • Capacitación y herramientas para el crecimiento de tu empresa 📘🚀\n\n' +
+        '🗓️ • Reuniones semanales (comercialización, capacitación, recorridos, etc.)\n' +
+        '🤝 • Participación en eventos interasociaciones y macrocomercialización\n' +
+        '🏡 • Publicación de propiedades en plataformas como Wiggot, Macrobolsa y Neojaus\n' +
+        '💵 • Derecho a comisiones compartidas con asociaciones nacionales e internacionales\n' +
+        '📲 • Apoyo en promoción, asesoría, grupos de WhatsApp especializados y respaldo ante controversias\n' +
+        '🎓 • Acceso a descuentos en cursos y diplomados en temas inmobiliarios\n' +
+        '🌐 • Micrositio, credencial digital, uso del logotipo PAIS y acceso a plataforma wechamber.com\n' +
+        '🗣️ • Club de oratoria y herramienta de IA especializada en el sector\n\n' +
         '🤝 *Impulsamos tu empresa, fortalecemos tu presencia y representamos tus intereses ante autoridades.* 🏬✅';
+
 
 
     await sendMessage(senderId, info);
